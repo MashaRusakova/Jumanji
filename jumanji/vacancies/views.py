@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 from django.views import View
-from .models import Specialty, Company, Vacancy
+from .models import Speciality, Company, Vacancy
 
 # Create your views here.
 class MainView(View):
@@ -23,6 +23,6 @@ class CompanyView(View):
 
 class VacancyView(View):
     def get(self, request, id):
-        vacancy = Vacancy.objects.get(id)
+        vacancy = Vacancy.objects.get(id=id)
         return render(request, 'vacancy.html', context={'vacancy': vacancy})
 

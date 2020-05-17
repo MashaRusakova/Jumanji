@@ -7,7 +7,7 @@ from .data import specialties
 
 # Create your models here.
 
-class Specialty(models.Model):
+class Speciality(models.Model):
     code = models.CharField(max_length=20)   # Код (code) например, testing, gamedev
     title = models.CharField(max_length=100)  # Название (title)
     picture = models.ImageField()  # Картинка (picture) (пока оставьте пустой строкой)
@@ -20,7 +20,7 @@ class Company(models.Model):
 
 class Vacancy(models.Model):
     title = models.CharField(max_length=100)    # Название вакансии
-    specialty = models.ForeignKey(Specialty, related_name="vacancies", on_delete=models.CASCADE)    # Специализация
+    specialty = models.ForeignKey(Speciality, related_name="vacancies", on_delete=models.CASCADE)    # Специализация
     company = models.ForeignKey(Company, related_name="vacancies", on_delete=models.CASCADE)    # Компания
     skills = models.CharField(max_length=300, blank=True)   # Навыки
     description = models.TextField(max_length=500, blank=True)  # Текст
