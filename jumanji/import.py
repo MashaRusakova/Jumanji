@@ -3,14 +3,14 @@
 # import datetime
 #
 # from .data import jobs, companies, specialties
-# from jumanji.vacancies.models import Speciality, Company, Vacancy
+# from jumanji.vacancies.models import Specialty, Company, Vacancy
 #
 #
 #
 # for speciality in specialties:
 #     for key, value in speciality.items():
 #         print(key, value)
-#         speciality_model = Speciality.objects.create(code=speciality['code'],
+#         speciality_model = Specialty.objects.create(code=speciality['code'],
 #                                                     title=speciality['title'],
 #                                                     picture='https://place-hold.it/100x60')
 #
