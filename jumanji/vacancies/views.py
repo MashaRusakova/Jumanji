@@ -1,9 +1,15 @@
+from django.db.models import Count
+from django.http import Http404, HttpResponseNotFound, HttpResponseRedirect
+from django.views import View
 from django.shortcuts import render
 
-from django.http import Http404, HttpResponseNotFound
-from django.db.models import Count
-from django.views import View
-from .models import Specialty, Company, Vacancy
+from django.contrib.auth.forms import UserCreationForm
+from django.views.generic import CreateView
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LogoutView
+
+from .models import Company, Vacancy, Specialty, Application
+from .forms import ApplicationForm
 
 
 # Create your views here.
@@ -22,12 +28,13 @@ class MainView(View):
 
 
 class VacanciesView(View):
+
     def get(self, request):
-        jobs = Vacancy.objects.all()
-        number_of_vacancies = len(jobs)
+        vacancies = Vacancy.objects.all()
+        number_of_vacancies = len(vacancies)
 
         return render(request, 'vacancies.html', context={
-            'jobs': jobs,
+            'vacancies': vacancies,
             'number_of_vacancies': number_of_vacancies,
         }
                       )
@@ -50,30 +57,75 @@ class SpecializationView(View):
 
 class CompanyView(View):
     def get(self, request, id):
-        сompany = Company.objects.filter(id=id).first()
-        if not сompany:
+        company = Company.objects.filter(id=id).first()
+        if not company:
             raise Http404
 
-        name = сompany.name
-        number_of_vacancies = len(сompany.vacancies.all())
+        name = company.name
+        logo = company.logo
+        number_of_vacancies = len(company.vacancies.all())
 
         return render(request, 'company.html', context={
-            'сompany': сompany,
+            'company': company,
             'name': name,
             'number_of_vacancies': number_of_vacancies,
-            'vacancies': сompany.vacancies.all(),
+            'vacancies': company.vacancies.all(),
+            'logo': logo,
         }
                       )
 
 
 class VacancyView(View):
-    def get(self, request, id):
+    def get(self, request, id, *args, **kwargs):
+        application_form = ApplicationForm()
         vacancy = Vacancy.objects.filter(id=id).first()
         if not vacancy:
             raise Http404
-        context = {'vacancy': vacancy}
+        context = {'vacancy': vacancy, 'application_form': application_form}
         return render(request, 'vacancy.html', context)
 
+    def application_view(request):
+        if request.method == 'POST':
+            application_form = ApplicationForm(request.POST)
+            if application_form.is_valid():
+                data = application_form.cleaned_data
+                return render(request, '/sent.html')
+        else:
+            application_form = ApplicationForm()
+        return render(request, 'vacancy.html', {'application_form': application_form})
 
-def custom_handler404(request, exception):
-    return HttpResponseNotFound('Ой, такой страницы нет!')
+
+class VacanciesSendView(View):
+    def get(self, request,  *args, **kwargs):
+        return render(request, 'sent.html', context={})
+
+
+class MyCompanyView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'company-edit.html', context={})
+
+
+class MyVacanciesView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'vacancy-list.html', context={})
+
+
+class MyCompanyVacancyView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'vacancy-edit.html', context={})
+
+
+class MyLoginView(LoginView):
+    redirect_authenticated_user = True
+    template_name = 'login.html'
+    next = '/'
+
+
+class MySignupView(CreateView):
+    form_class = UserCreationForm
+    success_url = '/login'
+    template_name = 'register.html'
+
+
+# def custom_handler404(request, exception):
+#     return HttpResponseNotFound('Ой, такой страницы нет!')

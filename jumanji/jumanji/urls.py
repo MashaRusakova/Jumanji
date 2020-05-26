@@ -14,13 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 
-from vacancies.views import MainView, VacanciesView,\
-    SpecializationView, CompanyView, VacancyView
-from vacancies.views import custom_handler404
+# from vacancies.views import custom_handler404
+from django.contrib.auth.views import LogoutView
 
-handler404 = custom_handler404
+from vacancies.views import MainView, VacanciesView,\
+     SpecializationView, CompanyView, VacancyView,\
+     MySignupView, VacanciesSendView, MyCompanyView,\
+     MyVacanciesView, MyCompanyVacancyView, MyLoginView
+
+# handler404 = custom_handler404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +35,17 @@ urlpatterns = [
     path('vacancies/cat/<str:specialty>', SpecializationView.as_view()),
     path('companies/<int:id>', CompanyView.as_view()),
     path('vacancies/<int:id>', VacancyView.as_view()),
+    path('vacancies/<vacancy_id>/send', VacanciesSendView.as_view()),
+    path('mycompany', MyCompanyView.as_view()),
+    path('mycompany/vacancies', MyVacanciesView.as_view()),
+    path('mycompany/vacancies/<vacancy_id>', MyCompanyVacancyView.as_view()),
+    path('login', MyLoginView.as_view()),
+    path('logout', LogoutView.as_view()),
+    path('register', MySignupView.as_view()),
+    # path('vacancies/<int:id>', MySignupView.as_view()),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
+
+LOGIN_REDIRECT_URL = '/'
