@@ -15,12 +15,14 @@ class Specialty(models.Model):
 
 class Company(models.Model):
     name = models.CharField(max_length=100)  # Название
-    location = models.CharField(max_length=50, blank=True)  # Город
-    logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR)  # Логотипчик(logo)
-    description = models.TextField(max_length=500, blank=True)
+    logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR)  # Логотипчик
     employee_count = models.IntegerField(blank=True)
+    location = models.CharField(max_length=50, blank=True)  # Город
+    description = models.TextField(max_length=500, blank=True)
     owner = models.ForeignKey(User,
-                             blank=True, null=True, on_delete=models.SET_NULL)    # Владелец
+                              blank=True,
+                              null=True,
+                              on_delete=models.SET_NULL)    # Владелец
 
 
 class Vacancy(models.Model):

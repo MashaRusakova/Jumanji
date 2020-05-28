@@ -36,12 +36,12 @@ urlpatterns = [
     path('companies/<int:id>', CompanyView.as_view()),
     path('vacancies/<int:id>', VacancyView.as_view()),
     path('vacancies/<vacancy_id>/send', VacanciesSendView.as_view()),
-    path('mycompany', MyCompanyView.as_view()),
+    path('mycompany', MyCompanyView.as_view(), name='my_company'),
     path('mycompany/vacancies', MyVacanciesView.as_view()),
     path('mycompany/vacancies/<vacancy_id>', MyCompanyVacancyView.as_view()),
-    path('login', MyLoginView.as_view()),
-    path('logout', LogoutView.as_view()),
-    path('register', MySignupView.as_view()),
+    path('login', MyLoginView.as_view(), name='login'),
+    path('logout', LogoutView.as_view(), name='logout'),
+    path('register', MySignupView.as_view(), name='register'),
     # path('vacancies/<int:id>', MySignupView.as_view()),
 ]
 if settings.DEBUG:

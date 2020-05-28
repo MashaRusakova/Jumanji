@@ -1,5 +1,7 @@
 from django.db.models import Count
 from django.http import Http404, HttpResponseNotFound, HttpResponseRedirect
+from django.db import models
+from APPNAME import models
 from django.views import View
 from django.shortcuts import render
 
@@ -9,7 +11,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.views import LogoutView
 
 from .models import Company, Vacancy, Specialty, Application
-from .forms import ApplicationForm
+from .forms import ApplicationForm, CompanyForm
 
 
 # Create your views here.
@@ -84,12 +86,20 @@ class VacancyView(View):
         context = {'vacancy': vacancy, 'application_form': application_form}
         return render(request, 'vacancy.html', context)
 
-    def application_view(request):
+    def post(self, request, id, *args, **kwargs):
         if request.method == 'POST':
             application_form = ApplicationForm(request.POST)
             if application_form.is_valid():
                 data = application_form.cleaned_data
-                return render(request, '/sent.html')
+                application_form.user = request.user
+                application = Application(user=request.user,
+                                          vacancy=Vacancy.objects.filter(id=id).first(),
+                                          written_username=data['written_username'],
+                                          written_phone=data['written_phone'],
+                                          written_cover_letter=data['written_cover_letter'],
+                                          )
+                application.save()
+                return render(request, 'sent.html')
         else:
             application_form = ApplicationForm()
         return render(request, 'vacancy.html', {'application_form': application_form})
@@ -102,7 +112,39 @@ class VacanciesSendView(View):
 
 class MyCompanyView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'company-edit.html', context={})
+        # company_form = CompanyForm()
+        my_company_req = models.Company.objects.filter(owner=request.user)
+        if len(my_company_req) == 0:
+            return render(request,
+                          'hh/company-create.html',
+                          context={'title': 'Создать карточку компании'})
+        else:
+            return render(request,
+                          'hh/company-edit.html',
+                          context={'title': 'Моя компания',
+                                   'form': CompanyEditForm(instance=my_company_req.first())}
+                          )
+
+    def post(self, request, *args, **kwargs):
+        my_company_req = models.Company.objects.filter(owner=request.user)
+        company_form = CompanyForm(request.POST, request.FILES)
+        if company_form.is_valid():
+            if len(my_company_req) == 0:
+                company = company_form.save(commit=False)
+                company.owner = request.user
+                company.save()
+            else:
+                company = my_company_req.first()
+                company_form.save()
+            return HttpResponseRedirect(request.path)
+        else:
+            return render(
+                request, 'hh/company-edit.html',
+                context={'title': 'Моя компания',
+                         'form': CompanyEditForm(initial={'owner': request.user})
+                         }
+            )
+
 
 
 class MyVacanciesView(View):
