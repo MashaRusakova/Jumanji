@@ -1,9 +1,10 @@
 from django.db.models import Count
 from django.http import Http404, HttpResponseNotFound, HttpResponseRedirect
-from django.db import models
-from APPNAME import models
+# from django.db import models
+from vacancies import models
 from django.views import View
 from django.shortcuts import render
+from django.shortcuts import redirect
 
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import CreateView
@@ -110,41 +111,68 @@ class VacanciesSendView(View):
         return render(request, 'sent.html', context={})
 
 
-class MyCompanyView(View):
+class MyCompanyEditView(View):
     def get(self, request, *args, **kwargs):
-        # company_form = CompanyForm()
         my_company_req = models.Company.objects.filter(owner=request.user)
+        company_form = CompanyForm()
         if len(my_company_req) == 0:
             return render(request,
-                          'hh/company-create.html',
-                          context={'title': 'Создать карточку компании'})
+                          'company-create.html',
+                          context={'title': 'Создайте карточку компании'}
+                          )
         else:
             return render(request,
-                          'hh/company-edit.html',
+                          'company-edit.html',
                           context={'title': 'Моя компания',
-                                   'form': CompanyEditForm(instance=my_company_req.first())}
+                                   'company_form': CompanyForm(instance=my_company_req.first())
+                                   }
                           )
 
     def post(self, request, *args, **kwargs):
         my_company_req = models.Company.objects.filter(owner=request.user)
         company_form = CompanyForm(request.POST, request.FILES)
         if company_form.is_valid():
-            if len(my_company_req) == 0:
-                company = company_form.save(commit=False)
-                company.owner = request.user
-                company.save()
-            else:
-                company = my_company_req.first()
-                company_form.save()
-            return HttpResponseRedirect(request.path)
+            company = my_company_req.first()
+            company_form = CompanyForm(request.POST,
+                                       request.FILES,
+                                       instance=company)
+            company_form.save()
+            return HttpResponseRedirect(request.path, content={'title': 'Моя компания'})
         else:
             return render(
-                request, 'hh/company-edit.html',
-                context={'title': 'Моя компания',
-                         'form': CompanyEditForm(initial={'owner': request.user})
+                request, 'company-edit.html',
+                context={'title': 'Информация о компании обновлена',
+                         'form': CompanyForm(initial={'owner': request.user})
                          }
             )
 
+
+class MyCompanyCreateView(View):
+    def get(self, request, *args, **kwargs):
+        my_company_req = models.Company.objects.filter(owner=request.user)
+        company_form = CompanyForm()
+        return render(request,
+                      'company-edit.html',
+                      context={'title': 'Создайте карточку компании',
+                               'company_form': company_form,
+                               }
+                      )
+
+    def post(self, request, *args, **kwargs):
+        my_company_req = models.Company.objects.filter(owner=request.user)
+        company_form = CompanyForm(request.POST, request.FILES)
+        if company_form.is_valid():
+            company = company_form.save(commit=False)
+            company.owner = request.user
+            company.save()
+            return redirect(request.path, )
+        else:
+            return render(
+                request, 'company-edit.html',
+                context={'title': 'Моя компания',
+                         'company_form': company_form
+                         }
+            )
 
 
 class MyVacanciesView(View):

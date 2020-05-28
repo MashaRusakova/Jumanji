@@ -15,7 +15,7 @@ class Specialty(models.Model):
 
 class Company(models.Model):
     name = models.CharField(max_length=100)  # Название
-    logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR)  # Логотипчик
+    logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR, null=True, blank=True)  # Логотипчик
     employee_count = models.IntegerField(blank=True)
     location = models.CharField(max_length=50, blank=True)  # Город
     description = models.TextField(max_length=500, blank=True)
@@ -48,7 +48,7 @@ class Application(models.Model):
     written_cover_letter = models.CharField(max_length=500)     # Сопроводительное письмо
     vacancy = models.ForeignKey(Vacancy,
                                 related_name="applications",
-                                on_delete=models.CASCADE)  # Вакансия
+                                on_delete=models.CASCADE, blank=True)  # Вакансия
     user = models.ForeignKey(User,
                              related_name="applications",
                              on_delete=models.CASCADE)   # Пользователь

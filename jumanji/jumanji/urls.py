@@ -23,8 +23,9 @@ from django.contrib.auth.views import LogoutView
 
 from vacancies.views import MainView, VacanciesView,\
      SpecializationView, CompanyView, VacancyView,\
-     MySignupView, VacanciesSendView, MyCompanyView,\
-     MyVacanciesView, MyCompanyVacancyView, MyLoginView
+     MySignupView, VacanciesSendView, MyCompanyEditView,\
+     MyVacanciesView, MyCompanyVacancyView, MyLoginView,\
+     MyCompanyCreateView
 
 # handler404 = custom_handler404
 
@@ -36,8 +37,9 @@ urlpatterns = [
     path('companies/<int:id>', CompanyView.as_view()),
     path('vacancies/<int:id>', VacancyView.as_view()),
     path('vacancies/<vacancy_id>/send', VacanciesSendView.as_view()),
-    path('mycompany', MyCompanyView.as_view(), name='my_company'),
-    path('mycompany/vacancies', MyVacanciesView.as_view()),
+    path('mycompany/edit', MyCompanyEditView.as_view(), name='my_company'),
+    path('mycompany/create', MyCompanyCreateView.as_view(), name='my_company_cr'),
+    path('mycompany/vacancies', MyVacanciesView.as_view(), name='mycompany_vac'),
     path('mycompany/vacancies/<vacancy_id>', MyCompanyVacancyView.as_view()),
     path('login', MyLoginView.as_view(), name='login'),
     path('logout', LogoutView.as_view(), name='logout'),

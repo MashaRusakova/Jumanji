@@ -30,9 +30,3 @@ class CompanyForm(ModelForm):
 
 
 form = CompanyForm()
-
-
-class CompanyEditForm(ModelForm):
-    class Meta:
-        model = Company
-        exclude = ['name', 'logo', 'employee_count', 'location', 'description', 'owner']
