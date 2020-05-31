@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Company
+from .models import Company, Vacancy
 
 
 class ApplicationForm(forms.Form):
@@ -30,3 +30,21 @@ class CompanyForm(ModelForm):
 
 
 form = CompanyForm()
+
+
+class VacancyForm(ModelForm):
+    class Meta:
+        model = Vacancy
+        labels = {
+            'title': 'Название вакансии',
+            'specialty': 'Специализация',
+            'salary_min': 'Зарплата от',
+            'salary_max': 'Зарплата до',
+            'skills': 'Требуемые навыки',
+            'description': 'Описание вакансии',
+            'published_at': 'Дата создания'
+        }
+        exclude = ['company']
+
+
+form = VacancyForm()
