@@ -4,6 +4,7 @@ django-crispy-forms==1.9.1
 django-extensions==2.2.9
 Pillow==7.1.2
 pytz==2020.1
+gunicorn==20.0.4
 runscript==0.2.9
 six==1.14.0
 sqlparse==0.3.1
